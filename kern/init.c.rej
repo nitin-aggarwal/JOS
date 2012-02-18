@@ -1,0 +1,65 @@
+--- kern/init.c
++++ kern/init.c
+@@ -51,27 +55,53 @@
+ 	time_init();
+ 	pci_init();
+ 
++
++	// Project related Initializations 
++
++	// Global clock initialization
++	global_clock_init();
++
++	// Run Queues INitialization
++	if(SCHED_CLASS == 3)
++		sched_init();
++
++	// Lottery list init
++	if(SCHED_CLASS == 4)
++		ticket_list_init();	
++	
++
+ 	// Should always have an idle process as first one.
+ 	ENV_CREATE(user_idle);
+ 
+ 	// Start fs.
+ 	//uncomment when starting lab5
+-	ENV_CREATE(fs_fs);
++	ENV_CREATE_SCHEDULER(fs_fs,13);
+ 
+-#if !defined(TEST_NO_NS)
+-	// Start ns.
+-	//ENV_CREATE(net_ns);
+-#endif
+ 
+ #if defined(TEST)
+ 	// Don't touch -- used by grading script!
+-	ENV_CREATE2(TEST, TESTSIZE);
++	//ENV_CREATE2(TEST, TESTSIZE);
+ #else
+ 	// Touch all you want.
+-	//ENV_CREATE(user_icode);
+-	ENV_CREATE(user_testpipe);
++
++//------------------------------
++	//FOR PROJECT
++
++	ENV_CREATE_SCHEDULER(user_sched_testfile1,4);
++	ENV_CREATE_SCHEDULER(user_sched_testfile2,3);
++	
++
++	//ENV_CREATE_SCHEDULER(user_icode,3);
++	//ENV_CREATE_SCHEDULER(user_testpteshare,3);
++	//ENV_CREATE_SCHEDULER(user_testfdsharing,3);
++	//ENV_CREATE_SCHEDULER(user_dumbfork, -12);
++	//ENV_CREATE_SCHEDULER(user_forktree, 3);
++	//ENV_CREATE_SCHEDULER(user_testpipe,3);
++
++//------------------------------
++	//ENV_CREATE(user_testpipe);
+ 	//ENV_CREATE(user_testtime);
+-	ENV_CREATE(user_testshell);
++	//ENV_CREATE(user_testshell);
+ 	//ENV_CREATE(net_testinput);
+ 	//ENV_CREATE(user_echosrv);
+ 	//ENV_CREATE(user_httpd);
